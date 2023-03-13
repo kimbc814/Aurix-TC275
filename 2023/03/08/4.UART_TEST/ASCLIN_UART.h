@@ -31,9 +31,7 @@
 /*------------------------------------------------Function Prototypes------------------------------------------------*/
 /*********************************************************************************************************************/
 void init_ASCLIN_UART(void);                 /* Initialization function   */
-void send_ASCLIN_UART_message(void);
 void send_receive_ASCLIN_UART_message(void); /* Send and receive function */
-void receive_ASCLIN_UART_message(sint32 cnt);
-int rec();
+void send_ASCLIN_UART_message(void);
 sint32 receive_buff_count(void);
 #endif /* ASCLIN_UART_H_ */

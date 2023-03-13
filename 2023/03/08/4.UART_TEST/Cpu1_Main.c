@@ -29,7 +29,6 @@
 #include "IfxScuWdt.h"
 #include "Blinky_LED.h"
 
-
 extern IfxCpu_syncEvent g_cpuSyncEvent;
 
 int core1_main(void)
@@ -44,6 +43,7 @@ int core1_main(void)
     /* Wait for CPU sync event */
     IfxCpu_emitEvent(&g_cpuSyncEvent);
     IfxCpu_waitEvent(&g_cpuSyncEvent, 1);
+    
     initLED();
     while(1)
     {

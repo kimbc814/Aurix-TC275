@@ -30,8 +30,6 @@
 /*********************************************************************************************************************/
 #include "IfxAsclin_Asc.h"
 #include "IfxCpu_Irq.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 /*********************************************************************************************************************/
 /*------------------------------------------------------Macros-------------------------------------------------------*/
@@ -39,7 +37,7 @@
 #define UART_BAUDRATE           115200                                  /* UART baud rate in bit/s                  */
 
 #define UART_PIN_RX             IfxAsclin0_RXB_P15_3_IN                 /* UART receive port pin                    */
-#define UART_PIN_TX             IfxAsclin0_TX_P15_3_OUT                 /* UART transmit port pin                   */
+#define UART_PIN_TX             IfxAsclin0_TX_P15_2_OUT                 /* UART transmit port pin                   */
 
 /* Definition of the interrupt priorities */
 #define INTPRIO_ASCLIN0_RX      18
@@ -49,6 +47,7 @@
 #define UART_TX_BUFFER_SIZE     64                                      /* Definition of the transmit buffer size   */
 #define SIZE                    30                                      /* Size of the string                       */
 #define MAX_RCV_BUFFER_SIZE     20
+
 /*********************************************************************************************************************/
 /*-------------------------------------------------Global variables--------------------------------------------------*/
 /*********************************************************************************************************************/
@@ -60,13 +59,14 @@ static uint8 g_ascTxBuffer[UART_TX_BUFFER_SIZE + sizeof(Ifx_Fifo) + 8];
 static uint8 g_ascRxBuffer[UART_RX_BUFFER_SIZE + sizeof(Ifx_Fifo) + 8];
 
 /* Definition of txData and rxData */
-uint8 g_txData[] = "10";
+uint8 g_txData[] = "Hello World!";
 uint8 g_rxData[SIZE] = {''};
 uint8 g_rxRcvBuffer[MAX_RCV_BUFFER_SIZE]={''};
-uint8 grxData[MAX_RCV_BUFFER_SIZE] = {''};
+
 /* Size of the message */
 Ifx_SizeT g_count = sizeof(g_txData);
-int cnt_rcv =0;
+
+int cnt_rcv = 0;
 /*********************************************************************************************************************/
 /*---------------------------------------------Function Implementations----------------------------------------------*/
 /*********************************************************************************************************************/
@@ -80,15 +80,14 @@ void asclin0TxISR(void)
 IFX_INTERRUPT(asclin0RxISR, 0, INTPRIO_ASCLIN0_RX);
 void asclin0RxISR(void)
 {
-    int size_of_read =1;
+    int size_of_read = 1;
     IfxAsclin_Asc_isrReceive(&g_ascHandle);
-    IfxAsclin_Asc_read(&g_ascHandle, g_rxData, &size_of_read, TIME_INFINITE);
+    IfxAsclin_Asc_read(&g_ascHandle,g_rxData,&size_of_read,TIME_INFINITE);
 
-    for(int i=0;i<MAX_RCV_BUFFER_SIZE-1;i++){
-        g_rxRcvBuffer[i] = g_rxRcvBuffer[i+1];
-
+    for(int i=0; i<MAX_RCV_BUFFER_SIZE-1;i++){
+        g_rxRcvBuffer[i]=g_rxRcvBuffer[i+1];
     }
-    g_rxRcvBuffer[MAX_RCV_BUFFER_SIZE-1]= g_rxData[0];
+    g_rxRcvBuffer[MAX_RCV_BUFFER_SIZE-1] = g_rxData[0];
     cnt_rcv++;
 }
 
@@ -135,25 +134,10 @@ void send_receive_ASCLIN_UART_message(void)
 }
 void send_ASCLIN_UART_message(void)
 {
-    //IfxAsclin_Asc_write(&g_ascHandle, g_txData, &g_count, TIME_INFINITE);   /* Transmit data via TX */
     IfxAsclin_Asc_write(&g_ascHandle, g_txData, &g_count, TIME_INFINITE);   /* Transmit data via TX */
 }
 sint32 receive_buff_count(void)
 {
   return IfxAsclin_Asc_getReadCount(&g_ascHandle);
 }
-void receive_ASCLIN_UART_message(sint32 cnt)
-{
-    /* Receive data via RX  */
 
-    IfxAsclin_Asc_read(&g_ascHandle, g_rxData, &cnt, TIME_INFINITE);
-}
-int rec(){
-
-    for(int i = MAX_RCV_BUFFER_SIZE-cnt_rcv;i<MAX_RCV_BUFFER_SIZE;i++){
-        grxData[i-MAX_RCV_BUFFER_SIZE+cnt_rcv]=g_rxRcvBuffer[i];
-    }
-    int a=0;
-    a=atoi(grxData);
-    return a;
-}

@@ -43,11 +43,10 @@
 #include "ASCLIN_UART.h"
 #include "Bsp.h"
 
-
 IfxCpu_syncEvent g_cpuSyncEvent = 0;
 
-sint32 r_buff_cnt = 0;
-int resault =0;
+sint32 r_buff_cnt =0;
+
 int core0_main(void)
 {
     /* !!WATCHDOG0 AND SAFETY WATCHDOG ARE DISABLED HERE!!
@@ -66,12 +65,9 @@ int core0_main(void)
 
     while(1)
     {
-        r_buff_cnt = receive_buff_count();
-        receive_ASCLIN_UART_message(r_buff_cnt);
         send_ASCLIN_UART_message();
-        resault=rec();
-        //waitTime(IfxStm_getTicksFromMilliseconds(BSP_DEFAULT_TIMER, 10000));    /* Wait 500 milliseconds            */
-
+        waitTime(IfxStm_getTicksFromMilliseconds(BSP_DEFAULT_TIMER, 1000));
+        r_buff_cnt = receive_buff_count();
     }
     return (1);
 }
