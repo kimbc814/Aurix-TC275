@@ -90,11 +90,12 @@ void setup() {
   // 마스터의 데이터 전송 요구가 있을 때 처리할 함수 등록
   Wire.onRequest(sendToMaster);
   Serial.begin(115200);
-  MsTimer2::set(10,Timer1);
+  MsTimer2::set(2,Timer1);
   MsTimer2::start();
   Serial.println("start");
   wdt_disable();
-  wdt_enable(WDTO_120MS);
+  wdt_enable(WDTO_15MS);
+  digitalWrite(PIN_WATCHDOG_OUT,HIGH);
 }
 
 int CRC16_MODBUS(const uint8_t *nData, uint16_t wLength)
@@ -138,8 +139,8 @@ int CRC16_MODBUS(const uint8_t *nData, uint16_t wLength)
 }
 
 void Data_crc16() {
-  for(int j=0;j<9;j++){
-    data_check[j] = ring_buff[(R_data + RING_BUFFER_SIZE - 9+j) % RING_BUFFER_SIZE];
+  for(int j=0;j<7;j++){
+    data_check[j] = ring_buff[(R_data + RING_BUFFER_SIZE - 7+j) % RING_BUFFER_SIZE];
     }
   for(int i=0;i<7;i++){Serial.print(data_check[i]);Serial.print(" ");}Serial.println("");
   if(data_check[0]==174 && data_check[1]==184 && data_check[2]=='I' && data_check[3]==1){
@@ -174,6 +175,7 @@ void Ring_Buff(){
 
 void Timer1() //ADC 값을 읽어와서, 이진수로 변환한 후 8개의 LED로 출력하는 함수
 {
+    if(digitalRead(PIN_WATCHDOG_IN) == HIGH){wdt_reset();}
     ADC_.ADC_VALUE=analogRead(A0);
     //Serial.println(ADC_.ADC_VALUE);
     for(int i=0;i<8;i++){
@@ -193,12 +195,6 @@ void Timer1() //ADC 값을 읽어와서, 이진수로 변환한 후 8개의 LED�
     B_pin_data[7]=digitalRead(BUTTON7);
     B_pin_data[0]=digitalRead(BUTTON8);
   }
-int watchdog_temp;
-void TIMER_2(){
-  digitalWrite(PIN_WATCHDOG_OUT, !digitalRead(PIN_WATCHDOG_OUT));
-  if(digitalRead(PIN_WATCHDOG_IN) == HIGH){watchdog_temp++;}
-  if(watchdog_temp >5){wdt_reset();}
-}
 void loop () {
 }
 void sendToMaster(){
