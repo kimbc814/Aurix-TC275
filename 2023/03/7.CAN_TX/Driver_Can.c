@@ -117,8 +117,8 @@ void CAN_send(CanRxMsg *message)                                                
 
     IfxMultican_Message msg;                                                                                                                /* Create structure 'IfxMultican_Message' named 'msg'                   */
 
-    const unsigned dataLow = message->Data[0]|(message->Data[1]<<8)|(message->Data[2]<<16)|(message->Data[3]<<24);                          /* Create checksum data using data array 0,1,2,3                        */
-    const unsigned dataHigh = message->Data[4]|(message->Data[5]<<8)|(message->Data[6]<<16)|(message->Data[7]<<24);                         /* Create checksum data using data array 4,5,6,7                        */
+    const unsigned dataLow = message->Data[0]|(message->Data[1]<<8)|(message->Data[2]<<16)|(message->Data[3]<<24);                          /* Change data dec to hex                                               */
+    const unsigned dataHigh = message->Data[4]|(message->Data[5]<<8)|(message->Data[6]<<16)|(message->Data[7]<<24);                         /* Change data dec to hex                                               */
 
 
     IfxMultican_Message_init(&msg,message->ID,dataLow,dataHigh,message->DLC);                                                               /* packaging id, dataLow, dataHigh, dataLength                          */
